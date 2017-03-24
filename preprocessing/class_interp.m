@@ -37,6 +37,15 @@ classdef class_interp
     methods (Access = public)
         % defining a constructor
         function obj = class_interp(varargin)
+            % add path to dependencies
+            if ispc == 1
+                sep = '\';
+            elseif isunix == 1
+                sep = '/';
+            end
+            addpath(['.',sep,'dependencies']);
+            % make sure to addpath to eeglab as well
+            
             % input EEG
             obj.preEEG = get_varargin(varargin,'input',eeg_emptyset());
             % check if the channel rejection has been conducted
@@ -56,12 +65,9 @@ classdef class_interp
             obj.preEEG = pop_select(obj.preEEG,'nochannel',{'initialReference'});
             % for checking purposes
             fprintf('Finished running CAR.\n');
+            
             % saving the CAR processed EEG
             outEEG = obj.preEEG;
-            try
-                outEEG.setname = [obj.preEEG.setname,'_CAR'];
-            catch e
-            end
         end
     end
     

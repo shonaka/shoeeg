@@ -119,6 +119,15 @@ classdef class_PREP
     methods (Access = public)
         % defining a constructor
         function obj = class_PREP(varargin)
+            % add path to dependencies
+            if ispc == 1
+                sep = '\';
+            elseif isunix == 1
+                sep = '/';
+            end
+            addpath(['.',sep,'dependencies']);
+            % make sure to addpath to eeglab as well
+            
             % input EEG (before PREP)
             obj.preEEG = get_varargin(varargin,'input',eeg_emptyset());
             

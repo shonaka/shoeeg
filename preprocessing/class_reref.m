@@ -36,6 +36,15 @@ classdef class_reref
     methods (Access = public)
         % defining a constructor
         function obj = class_reref(varargin)
+            % add path to dependencies
+            if ispc == 1
+                sep = '\';
+            elseif isunix == 1
+                sep = '/';
+            end
+            addpath(['.',sep,'dependencies']);
+            % make sure to addpath to eeglab as well
+            
             % input EEG (before CAR)
             obj.preEEG = get_varargin(varargin,'input',eeg_emptyset());
         end
@@ -51,15 +60,20 @@ classdef class_reref
             obj.preEEG.chanlocs(1,obj.preEEG.nbchan).labels = 'initialReference';
             obj.preEEG = pop_reref(obj.preEEG, []);
             obj.preEEG = pop_select(obj.preEEG,'nochannel',{'initialReference'});
+            
             % for checking purposes
             fprintf('Finished running CAR.\n');
+
+            % add note on processing steps
+            if isfield(obj.preEEG,'process_step') == 0
+                obj.preEEG.process_step = [];
+                obj.preEEG.process_step{1} = 'CAR';
+            else
+                obj.preEEG.process_step{end+1} = 'CAR';
+            end
+            
             % saving the CAR processed EEG
             outEEG = obj.preEEG;
-            % outEEG.setname = [obj.preEEG.setname,'_CAR'];
-            try
-               outEEG.process = [obj.preEEG.process,'_CAR'];
-            catch e
-            end
         end
     end
     
