@@ -1,7 +1,8 @@
 classdef class_AMICA
     % for running AMICA
     %   Usage:
-    %       amica_obj = class_AMICA('input',EEG);
+    %       % try reducing maxiter if there's an error
+    %       amica_obj = class_AMICA('input',EEG,'maxiter',1000);
     %       outEEG = process(amica_obj);
     %
     %   Arguments:
