@@ -122,7 +122,7 @@ classdef class_gantt_chart
             set(ax1, 'box', 'off');
             set(ax1,'TickDir','out');
             
-            % saving the AMICA processed EEG
+            % saving the figure
             output = fig;
         end
     end
