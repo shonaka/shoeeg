@@ -1,21 +1,18 @@
-classdef class_histogram
-    % for plotting histogram with optimal binsize using the
-    % Freedman-Diaconis rule
+classdef class_scatter
+    % for plotting scatter plot with your intended properties
     %
     %   Usage:
-    %       hist_obj = class_histogram('input',data,'facecolor',color);
-    %       output = process(hist_obj);
+    %       scat_obj = class_scatter('X',data,'Y',data,'facecolor',color,'marksize',msize);
+    %       output = process(scat_obj);
     %
     %   Arguments:
-    %       'input': data containing info for plot
-    %                   (e.g. a single vector data)
+    %       'X': data for x-axis (no need to put)
+    %       'Y': data for y-axis (mandatory)
     %
     %   Options:
     %       'facecolor': what color you want for the plot
+    %       'marksize': size for marker
     %
-    %   References:
-    %       The Freedman-Diaconis rule
-    %       https://en.wikipedia.org/wiki/Freedman%E2%80%93Diaconis_rule
     
     % Copyright (C) 2017 Sho Nakagome (snakagome@uh.edu)
     %
@@ -34,34 +31,33 @@ classdef class_histogram
     
     properties
         % input (required)
-        data;
+        Y;
         
         % other options
+        X;
         facecolor;
+        marksize;
     end
     
     methods (Access = public)
         % defining a constructor
-        function obj = class_histogram(varargin)
+        function obj = class_scatter(varargin)
             % input data
-            obj.data = get_varargin(varargin,'input',randn(20,1));
+            obj.Y = get_varargin(varargin,'Y',randn(20,1));
             
             % other parameters for plotting
+            obj.X = get_varargin(varargin,'X',1:length(obj.Y));
             obj.facecolor = get_varargin(varargin,'facecolor','b');
+            obj.marksize = get_varargin(varargin,'marksize',25);
         end
     end
     
     methods
-        function output = process(obj)
-            % Set parameters and variables for plotting
-            n = length(obj.data);
-            % calculate the optimal bin width
-            opt_binwidth = 2 * iqr(obj.data) / n^(1/3);
-            
+        function output = process(obj)            
             % plotting
-            hist_opt = histogram(obj.data);
-            hist_opt.BinWidth = opt_binwidth;
-            hist_opt.FaceColor = obj.facecolor;
+            scat_plot = scatter(obj.X,obj.Y,obj.marksize,...
+                'MarkerEdgeColor','k',...
+                'MarkerFaceColor',obj.facecolor);
             
             % some other things to make the plot look nicer
             % this cannot be controlled by defaults
@@ -70,7 +66,7 @@ classdef class_histogram
             set(ax1, 'TickDir', 'out');
             
             % saving the figure
-            output = hist_opt;
+            output = scat_plot;
         end
     end
     
