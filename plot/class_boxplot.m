@@ -1,19 +1,19 @@
-classdef class_plot
-    % for plotting line plot with your intended properties
+classdef class_boxplot
+    % for plotting box plot with your intended properties
     %
     %   Usage:
-    %       plot_obj = class_plot('X',data,'Y',data,'color',color,'linewidth',3);
-    %       output = process(plot_obj);
+    %       boxplt_obj = class_plot('X',data,'color',color);
+    %       output = process(boxplt_obj);
     %
     %   Arguments:
-    %       'X': data for x-axis (no need to put)
-    %       'Y': data for y-axis (mandatory)
+    %       'X': a matrix. Plots one box per column
     %
     %   Options:
     %       'color': what color you want for the plot
-    %                [default: 'k' = black]
-    %       'linewidth': your desired linewidth [default: 3]
-    %       'linestyle': line style [default: solid line = '-']
+    %                [default: 'k' = all black]
+    %                provide matrix [num of cols (boxes) x 3 (RGB)]
+    %       'outlier': to show outliers or not [default: 'off']
+    %
     
     % Copyright (C) 2017 Sho Nakagome (snakagome@uh.edu)
     %
@@ -32,36 +32,36 @@ classdef class_plot
     
     properties
         % input (required)
-        Y;
+        X;
         
         % other options
-        X;
         color;
-        linewidth;
-        linestyle;
+        outlier;
     end
     
     methods (Access = public)
         % defining a constructor
-        function obj = class_plot(varargin)
+        function obj = class_boxplot(varargin)
             % input data
-            obj.Y = get_varargin(varargin,'Y',randn(20,1));
+            obj.X = get_varargin(varargin,'X',randn(20,4));
             
             % other parameters for plotting
-            obj.X = get_varargin(varargin,'X',1:length(obj.Y));
             obj.color = get_varargin(varargin,'color','k');
-            obj.linewidth = get_varargin(varargin,'linewidth',3);
-            obj.linestyle = get_varargin(varargin,'linestyle','-');
+            obj.outlier = get_varargin(varargin,'outlier','off');
         end
     end
     
     methods
         function output = process(obj)            
             % plotting
-            plot_obj = plot(obj.X,obj.Y,...
-                'color',obj.color,...
-                'linewidth',obj.linewidth,...
-                'linestyle',obj.linestyle);
+            plot_obj = boxplot(obj.X,'PlotStyle','compact',...
+                'Color',obj.color);
+            
+            % if option outlier on, exclude outliers from plot
+            if strcmpi(obj.outlier,'off')
+                h = findobj(gca,'tag','Outliers');
+                set(h,'Visible','off');
+            end
             
             % some other things to make the plot look nicer
             % this cannot be controlled by defaults
