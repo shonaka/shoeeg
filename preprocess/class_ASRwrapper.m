@@ -1,7 +1,8 @@
-classdef class_ASR
-    % for running Artifact Subspace Reconstruction (ASR)
+classdef class_ASRwrapper
+    % for running Artifact Subspace Reconstruction (ASR) wrapper
+    % this is better than running ASR only one
     %   Usage:
-    %       asr_obj = class_ASR('input',EEG,'cutoff',5);
+    %       asr_obj = class_ASRwrapper('input',EEG);
     %       outEEG = process(asr_obj);
     %
     %   Arguments:
@@ -9,16 +10,15 @@ classdef class_ASR
     %                Assumed to be zero-mean. Highpass filtered.
     %
     %   Options:
-    %       'cutoff': standard deviation cutoff for removal of bursts [default: 5]
-    %
-    %       == Below parameters should be used with default ==
-    %       'windowlen': length of the stats window [default: 0.5]
-    %       'stepsize': step size for processing [default: [] ]
-    %       'maxdims': max dimensionality to reconstruct [default: 2/3]
-    %       'ref_maxbadchannels': [default: 0.075]
-    %       'ref_tolerances': [default: [-3.5 5.5] ]
-    %       'ref_wndlen': [default: 1]
-    %       'usegpu': [default: false]
+    %       'FlatlineCriterion': if it has X seconds of flatline, reject
+    %                            [default: 5]
+    %       'BurstCriterion': standard deviation cutoff for removal of bursts [default: 5]
+    %       'WindowCriterion': for removing time windows that were not
+    %                          repaired completely. [default: 0.25] 0.05 very aggresive, 0.3
+    %                          very lax.
+    %       
+    %       You could use baseline feeding in the ASR, but it's not
+    %       recommended if the data are not recorded continuously.
     %
     %   Pre-requisites:
     %       EEGLAB: https://sccn.ucsd.edu/eeglab/
@@ -52,59 +52,47 @@ classdef class_ASR
         % for handling EEG data
         preEEG;
         
-        % for ASR parameters
-        cutoff;
-        windowlen;
-        stepsize;
-        maxdims;
-        ref_maxbadchannels;
-        ref_tolerances;
-        ref_wndlen;
-        usegpu; % not working should be always false
+        % for ASR wrapper parameters
+        FlatlineCriterion;
+        BurstCriterion;
+        WindowCriterion;
     end
     
     methods (Access = public)
         % defining a constructor
-        function obj = class_ASR(varargin)
+        function obj = class_ASRwrapper(varargin)
             % add path to dependencies
             if ispc == 1
                 sep = '\';
             elseif isunix == 1
                 sep = '/';
             end
-            addpath(['.',sep,'dependencies']);
+            addpath(['..',sep,'dependencies']);
             % make sure to addpath to eeglab as well
             
             % input EEG
             obj.preEEG = get_varargin(varargin,'input',eeg_emptyset());
             
             % other parameters for ASR
-            obj.cutoff = get_varargin(varargin,'cutoff',5);
-            obj.windowlen = get_varargin(varargin,'windowlen',0.5);
-            obj.stepsize = get_varargin(varargin,'stepsize',[]);
-            obj.maxdims = get_varargin(varargin,'maxdims',2/3);
-            obj.ref_maxbadchannels = get_varargin(varargin,'ref_maxbadchannels',0.075);
-            obj.ref_tolerances = get_varargin(varargin,'ref_tolerances',1);
-            obj.ref_wndlen = get_varargin(varargin,'ref_wndlen',[]);
-            obj.usegpu = false;
+            obj.FlatlineCriterion = get_varargin(varargin,'FlatlineCriterion',5);
+            obj.BurstCriterion = get_varargin(varargin,'BurstCriterion',5);
+            obj.WindowCriterion = get_varargin(varargin,'WindowCriterion',0.25);
         end
     end
     
     methods
         function outEEG = process(obj)
             % for checking purposes
-            fprintf('Start running ASR...\n');
+            fprintf('Start running ASR wrapper ...\n');
             
-            % Run ASR with the options
-            obj.preEEG = clean_asr(obj.preEEG,...
-                obj.cutoff,...
-                obj.windowlen,...
-                obj.stepsize,...
-                obj.maxdims,...
-                obj.ref_maxbadchannels,...
-                obj.ref_tolerances,...
-                obj.ref_wndlen,...
-                obj.usegpu);
+            % Run ASR wrapper with options
+            obj.preEEG = clean_artifacts(obj.preEEG, ...
+                'FlatlineCriterion', obj.FlatlineCriterion,...
+                'Highpass',         'off',... % disabled should be handled by PREP
+                'ChannelCriterion',  'off',... % disabled
+                'LineNoiseCriterion',  'off',... % disabled
+                'BurstCriterion',    obj.BurstCriterion,...
+                'WindowCriterion',   obj.WindowCriterion);
             
             % add note on processing steps
             if isfield(obj.preEEG,'process_step') == 0

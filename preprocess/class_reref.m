@@ -42,7 +42,7 @@ classdef class_reref
             elseif isunix == 1
                 sep = '/';
             end
-            addpath(['.',sep,'dependencies']);
+            addpath(['..',sep,'dependencies']);
             % make sure to addpath to eeglab as well
             
             % input EEG (before CAR)

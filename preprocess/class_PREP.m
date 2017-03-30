@@ -125,7 +125,7 @@ classdef class_PREP
             elseif isunix == 1
                 sep = '/';
             end
-            addpath(['.',sep,'dependencies']);
+            addpath(['..',sep,'dependencies']);
             % make sure to addpath to eeglab as well
             
             % input EEG (before PREP)

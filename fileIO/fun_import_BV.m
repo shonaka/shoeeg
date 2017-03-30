@@ -51,7 +51,7 @@ for i = 1:size(files,1)
     EEG.chanlocs = new_elc;
     EEG.chanlocs_fromLocs = locs_file;
     
-    if (do_trim == 1) && (size(EEG.event,2) > 1)
+    if (do_trim == 1) && (size(EEG.event,2) > 5)
         % trim before trigger (anything prior to 1 second before the first trigger)
         first_trigger = EEG.event(1, 1).latency;
         try
