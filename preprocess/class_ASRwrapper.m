@@ -13,9 +13,6 @@ classdef class_ASRwrapper
     %       'FlatlineCriterion': if it has X seconds of flatline, reject
     %                            [default: 5]
     %       'BurstCriterion': standard deviation cutoff for removal of bursts [default: 5]
-    %       'WindowCriterion': for removing time windows that were not
-    %                          repaired completely. [default: 0.25] 0.05 very aggresive, 0.3
-    %                          very lax.
     %       
     %       You could use baseline feeding in the ASR, but it's not
     %       recommended if the data are not recorded continuously.
@@ -55,7 +52,7 @@ classdef class_ASRwrapper
         % for ASR wrapper parameters
         FlatlineCriterion;
         BurstCriterion;
-        WindowCriterion;
+        BurstCriterionRefMaxBadChns;
     end
     
     methods (Access = public)
@@ -76,7 +73,8 @@ classdef class_ASRwrapper
             % other parameters for ASR
             obj.FlatlineCriterion = get_varargin(varargin,'FlatlineCriterion',5);
             obj.BurstCriterion = get_varargin(varargin,'BurstCriterion',5);
-            obj.WindowCriterion = get_varargin(varargin,'WindowCriterion',0.25);
+            obj.BurstCriterionRefMaxBadChns = ...
+                get_varargin(varargin,'BurstCriterionRefMaxBadChns',[]);
         end
     end
     
@@ -92,7 +90,8 @@ classdef class_ASRwrapper
                 'ChannelCriterion',  'off',... % disabled
                 'LineNoiseCriterion',  'off',... % disabled
                 'BurstCriterion',    obj.BurstCriterion,...
-                'WindowCriterion',   obj.WindowCriterion);
+                'WindowCriterion',   'off',...
+                'BurstCriterionRefMaxBadChns', obj.BurstCriterionRefMaxBadChns);
             
             % add note on processing steps
             if isfield(obj.preEEG,'process_step') == 0
