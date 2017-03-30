@@ -80,13 +80,12 @@ classdef class_ASR
             
             % other parameters for ASR
             obj.cutoff = get_varargin(varargin,'cutoff',5);
-            obj.windowlen = get_varargin(varargin,'windowlen',...
-                max(0.5,1.5*obj.preEEG.nbchan/obj.preEEG.srate));
+            obj.windowlen = get_varargin(varargin,'windowlen',0.5);
             obj.stepsize = get_varargin(varargin,'stepsize',[]);
-            obj.maxdims = get_varargin(varargin,'maxdims',0.66);
+            obj.maxdims = get_varargin(varargin,'maxdims',2/3);
             obj.ref_maxbadchannels = get_varargin(varargin,'ref_maxbadchannels',0.075);
-            obj.ref_tolerances = get_varargin(varargin,'ref_tolerances',[-3.5 5.5]);
-            obj.ref_wndlen = get_varargin(varargin,'ref_wndlen',1);
+            obj.ref_tolerances = get_varargin(varargin,'ref_tolerances',1);
+            obj.ref_wndlen = get_varargin(varargin,'ref_wndlen',[]);
             obj.usegpu = false;
         end
     end
