@@ -4,6 +4,8 @@ classdef class_PREP
     %       prep_obj = class_PREP('input',EEG);
     %       outEEG = process(prep_obj);
     %
+    %   !!! Make sure to disable highpass filtering inside PREP !!!
+    %
     %   Arguments:
     %       'input': EEG structure from EEGLAB (required)
     %

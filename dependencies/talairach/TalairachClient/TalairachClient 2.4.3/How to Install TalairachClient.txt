@@ -1,0 +1,9 @@
+How To Install TalairachClient on Windows XP
+
+Drag and drop the TalairachClient folder onto the "Shortcut to Program Files" icon.  This will copy the files to the appropriate location.  If a window pops up asking if you want to replace files, choose "Yes to All".
+
+To add a shortcut to TalairachClient on your desktop, simply drag the icon named "Shortcut to TalairachClient" out of the folder window and onto your desktop.
+
+To add a shortcut to TalairachClient in your Start Menu, double-click the "Shortcut to Program Files" icon.  Next, find the folder named "TalairachClient" and double-click it.  Next, find the TalairachClient application icon and right-click it, then choose "Pin to Start Menu".
+
+Delete the installation files/folders by dragging them to the Recycle Bin.

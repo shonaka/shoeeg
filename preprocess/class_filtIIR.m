@@ -1,7 +1,7 @@
 classdef class_filtIIR
     % for filtering using zero-phase IIR filter (butterworth)
     %   Usage:
-    %       filt_obj = class_filtIIR('input',EEG,'cutoff',0.1,'type','highpass','order',2);
+    %       filt_obj = class_filtIIR('input',EEG,'cutoff',0.1,'type','high','order',2);
     %       EEG = process(filt_obj);
     %
     %   Arguments:

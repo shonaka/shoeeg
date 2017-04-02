@@ -13,6 +13,8 @@ classdef class_resamp
     %
     %   Pre-requisites:
     %       EEGLAB: https://sccn.ucsd.edu/eeglab/
+    %       pop_resample: change the part where it automatically renames
+    %       the setfile.
     %
     %   This function is better than normal resample in MATLAB, since it
     %   resamples not only the data, but event points too. Other related
@@ -66,6 +68,9 @@ classdef class_resamp
             % for checking purposes
             fprintf('Start resampling ...\n');
             
+            % get the original setname
+            orisetname = obj.preEEG.setname;
+            
             % run resample in EEGLAB function
             obj.preEEG = pop_resample(obj.preEEG, obj.resampleFreq);
             
@@ -80,7 +85,7 @@ classdef class_resamp
                 obj.preEEG.process_step{end+1} = 'Resample';
             end
             try
-                EEG.setname = [dataName,'_resamp'];
+                obj.preEEG.setname = [orisetname,'_resamp'];
             catch e
             end
             
