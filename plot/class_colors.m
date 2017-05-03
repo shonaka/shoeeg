@@ -85,7 +85,7 @@ classdef class_colors
                 obj.artistic.bbs{4} = [.816, .882, .976];
                 
             % gradient colormap for topoplots and spectrograms
-            N = 128;
+            N = 256;
             b2rColMap = [144 100  44;
                 187 120  54;
                 225 146  65;
