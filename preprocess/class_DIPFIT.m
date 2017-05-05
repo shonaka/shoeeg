@@ -37,6 +37,9 @@ classdef class_DIPFIT
     %       and Computing 2016. Springer International Publishing, 2016.
     
     % Copyright (C) 2017 Sho Nakagome (snakagome@uh.edu)
+    %               dipfit functions written by Arnaud Delorme
+    %               fitTwoDiples written by Makoto Miyakoshi, Catarina
+    %               Piazza
     %
     %     This program is free software: you can redistribute it and/or modify
     %     it under the terms of the GNU General Public License as published by

@@ -30,6 +30,7 @@ classdef class_AMICA
     %       University of California San Diego, Tech. Rep (2012).
     
     % Copyright (C) 2017 Sho Nakagome (snakagome@uh.edu)
+    %               amica10 written by Jason Palmer
     %
     %     This program is free software: you can redistribute it and/or modify
     %     it under the terms of the GNU General Public License as published by

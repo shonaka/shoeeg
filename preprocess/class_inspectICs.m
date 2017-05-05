@@ -51,6 +51,8 @@ classdef class_inspectICs
     %       Journal of neuroscience methods 250 (2015): 47-63.
     
     % Copyright (C) 2017 Sho Nakagome (snakagome@uh.edu)
+    %               dipfit_reject written by Robert Oostenveld
+    %               eeg_SASICA written by Maximilien Chaumon
     %
     %     This program is free software: you can redistribute it and/or modify
     %     it under the terms of the GNU General Public License as published by

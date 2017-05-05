@@ -31,6 +31,7 @@ classdef class_ASRwrapper
     %       http://sccn.ucsd.edu/eeglab/plugins/ASR.pdf
     
     % Copyright (C) 2017 Sho Nakagome (snakagome@uh.edu)
+    %               clean_artifacts written by Christian Kothe
     %
     %     This program is free software: you can redistribute it and/or modify
     %     it under the terms of the GNU General Public License as published by

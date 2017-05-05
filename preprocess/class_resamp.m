@@ -21,6 +21,7 @@ classdef class_resamp
     %   parameters in the EEGLAB structure is also resampled.
     
     % Copyright (C) 2017 Sho Nakagome (snakagome@uh.edu)
+    %               pop_resample written by Arnaud Delorme
     %
     %     This program is free software: you can redistribute it and/or modify
     %     it under the terms of the GNU General Public License as published by

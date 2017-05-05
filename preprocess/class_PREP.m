@@ -97,6 +97,7 @@ classdef class_PREP
     %       Front. Neuroinform. 9:16. doi: 10.3389/fninf.2015.00016
     
     % Copyright (C) 2017 Sho Nakagome (snakagome@uh.edu)
+    %               prepPipeline written by Kay Robbins
     %
     %     This program is free software: you can redistribute it and/or modify
     %     it under the terms of the GNU General Public License as published by
