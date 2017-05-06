@@ -1,4 +1,4 @@
-% std_dipoleDensity(): plots dipoles and dipole density. Requies
+% std_dipoleDensity_sho(): plots dipoles and dipole density. Requies
 %                      inputs from std_pop_dipplotWithDensity. In the
 %                      output, the unit measure is joint probability
 %                      (i.e. sum of all voxel values == 1).
@@ -54,7 +54,7 @@
 % along with this program; if not, write to the Free Software
 % Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-function std_dipoleDensity(STUDY, ALLEEG, varargin)
+function std_dipoleDensity_sho(STUDY, ALLEEG, varargin)
 varargin = varargin{1,1};
 
 onlyslices = varargin{1,end};

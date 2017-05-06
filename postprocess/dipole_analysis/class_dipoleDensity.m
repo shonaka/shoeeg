@@ -86,13 +86,13 @@ classdef class_dipoleDensity
         % defining a constructor
         function obj = class_dipoleDensity(varargin)
             % add path to dependencies (need this for
-            % std_groupDipSeparator)
+            % custom dipole density function)
             if ispc == 1
                 sep = '\';
             elseif isunix == 1
                 sep = '/';
             end
-            addpath(['..',sep,'dependencies']);
+            addpath(['..',sep,'..',sep,'dependencies']);
             % make sure to addpath to eeglab as well
             
             % input STUDY
