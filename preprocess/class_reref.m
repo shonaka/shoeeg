@@ -2,7 +2,8 @@ classdef class_reref < handle
     % for computing Re-reference to average or Common Average Reference
     %   Usage:
     %       reref_obj = class_reref('input',EEG);
-    %       EEG = process(reref_obj);
+    %       process(reref_obj);
+    %       EEG = reref_obj.postEEG;
     %       % visualize difference before and after
     %       visualize(reref_obj);
     %

@@ -1,8 +1,9 @@
-classdef class_PREP
+classdef class_PREP < handle
     % for running PREP pipeline
     %   Usage:
     %       prep_obj = class_PREP('input',EEG);
-    %       outEEG = process(prep_obj);
+    %       process(prep_obj);
+    %       EEG = prep_obj.postEEG;
     %       % visualize difference before and after
     %       visualize(prep_obj);
     %
@@ -204,7 +205,7 @@ classdef class_PREP
     end
     
     methods
-        function outEEG = process(obj)
+        function process(obj)
             % running the actual prep pipeline
             [obj.postEEG, ~] = prepPipeline(obj.preEEG, obj.params);
             % save interpolated channels as a result of PREP pipeline
@@ -229,8 +230,6 @@ classdef class_PREP
             else
                 obj.postEEG.process_step{end+1} = 'PREP';
             end
-            % saving the PREP processed EEG
-            outEEG = obj.postEEG;
         end
         
         function visualize(obj)
