@@ -1,12 +1,12 @@
 classdef class_dipoleDensity
     % for plotting dipole density from STUDY file
     %   Usage:
-    %       dipden_obj = class_dipoleDensity('inputStudy',STUDY,'inputEEG',ALLEEG);
+    %       dipden_obj = class_dipoleDensity('STUDY',STUDY,'ALLEEG',ALLEEG);
     %       process(dipden_obj);
     %
     %   Arguments:
-    %       'inputStudy': STUDY structure made before running this (required)
-    %       'inputEEG': ALLEEG structure made at the same time as STUDY
+    %       'STUDY': STUDY structure made before running this (required)
+    %       'ALLEEG': ALLEEG structure made at the same time as STUDY
     %
     %   Options (for more info go to reference at the bottom):
     %       'which_clust': which cluster you want to show as dipole
@@ -63,8 +63,8 @@ classdef class_dipoleDensity
     %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
     properties
-        inputSTUDY;
-        inputALLEEG;
+        STUDY;
+        ALLEEG;
         
         % for Dipole Density parameters
         which_clust;
@@ -85,24 +85,17 @@ classdef class_dipoleDensity
     methods (Access = public)
         % defining a constructor
         function obj = class_dipoleDensity(varargin)
-            % add path to dependencies (need this for
-            % custom dipole density function)
-            if ispc == 1
-                sep = '\';
-            elseif isunix == 1
-                sep = '/';
-            end
-            addpath(['..',sep,'..',sep,'dependencies']);
-            % make sure to addpath to eeglab as well
+            % add path to the custom function you made
+            addpath(which('std_dipoleDensity_sho.m'));
             
             % input STUDY
-            obj.inputSTUDY = get_varargin(varargin,'inputSTUDY',[]);
+            obj.STUDY = get_varargin(varargin,'STUDY',[]);
             % input ALLEEG
-            obj.inputALLEEG = get_varargin(varargin,'inputEEG',[]);
+            obj.ALLEEG = get_varargin(varargin,'ALLEEG',[]);
             
             % check errors (need the above inputs)
-            [obj.inputSTUDY, obj.inputALLEEG] = ...
-                std_checkset(obj.inputSTUDY, obj.inputALLEEG);
+            [obj.STUDY, obj.ALLEEG] = ...
+                std_checkset(obj.STUDY, obj.ALLEEG);
             
             % ===== Other parameters for Dipole Density =====
             obj.which_clust = get_varargin(varargin,'which_clust',2);
@@ -141,7 +134,7 @@ classdef class_dipoleDensity
         % if you just want to run normally
         function process(obj)
             % run std_dipoleDensity to get all the plots
-            std_dipoleDensity(obj.inputSTUDY, obj.inputALLEEG, obj.plotParams)
+            std_dipoleDensity(obj.STUDY, obj.ALLEEG, obj.plotParams)
         end
         
         % if you want to plot slices only
@@ -149,7 +142,7 @@ classdef class_dipoleDensity
             % run custom std_dipoleDensity to plot only slices
             onlyslices = 1;
             obj.plotParams{1,13} = onlyslices;
-            std_dipoleDensity_sho(obj.inputSTUDY, obj.inputALLEEG, obj.plotParams)
+            std_dipoleDensity_sho(obj.STUDY, obj.ALLEEG, obj.plotParams)
         end
     end
     

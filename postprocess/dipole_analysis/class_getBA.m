@@ -11,8 +11,8 @@ classdef class_getBA
     %                the option below.
     %
     %   Options:
-    %       'type': the type of input coordinates ( 1 (default) =
-    %       Talairach, 2 = MNI).
+    %       'coordinate_type': the type of input coordinates ( 1 (default) =
+    %                          Talairach, 2 = MNI).
     %
     %       'search_spacing': how much mm in cube range you want to search
     %                         the area? [default: 5] (mm)
@@ -42,7 +42,7 @@ classdef class_getBA
     %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
     properties
-        xyzdata;
+        input;
         coordinate_type;
         search_spacing;
     end
@@ -54,7 +54,7 @@ classdef class_getBA
             addpath(which('icbm_spm2tal.m'));
             
             % input coordinates
-            obj.xyzdata = get_varargin(varargin,'input',zeros(5,3));
+            obj.input = get_varargin(varargin,'input',zeros(5,3));
             
             % ===== Other parameters  =====
             obj.coordinate_type = get_varargin(varargin,'coordinate_type',1);
@@ -64,7 +64,7 @@ classdef class_getBA
     end
     
     methods
-        function identified_BA = process(obj)
+        function output = process(obj)
             % add path to talairach client java
             javaaddpath(which('talairach.jar'));
             % load Talairach java object and data
@@ -72,18 +72,16 @@ classdef class_getBA
             db.load(which('talairach.nii'));
             % based on the input, convert to talairach coordinates
             if obj.coordinate_type == 1
-                tal_xyz = obj.xyzdata;
+                tal_xyz = obj.input;
             elseif obj.coordinate_type == 2
-                tal_xyz = icbm_spm2tal(obj.xyzdata);
+                tal_xyz = icbm_spm2tal(obj.input);
             end
-            
-            % preallocate cell array containing BA info
-            identified_BA{size(tal_xyz,1),1} = [];
             
             % loop through the labels to obtain the information
             for locationId = 1:size(tal_xyz,1)
                 % for temporally holding area number
                 tmpAreaNum = [];
+                tmpGyrusRegion = {};
                 
                 labelsForLocation = db.search_range(tal_xyz(locationId,1),...
                     tal_xyz(locationId,2), tal_xyz(locationId,3), obj.search_spacing);
@@ -96,19 +94,27 @@ classdef class_getBA
                     % down the information
                     if strfind(potentialBAname, 'Brodmann area')
                         areaNum = str2num(potentialBAname(length('Brodmann area '):end));
+                        areaGyrusRegion = splitText{3};
                     end
                     
                     % if areaNum exists
                     if exist('areaNum')
                         tmpAreaNum = [tmpAreaNum,areaNum];
+                        tmpGyrusRegion = [tmpGyrusRegion,areaGyrusRegion];
                     end
                 end
                 
                 % sort identified BA number in order
                 sortedAreaNum = sort(unique(tmpAreaNum));
+                uniqueGyrus = unique(tmpGyrusRegion);
                 
                 % put the information in the cell array
-                identified_BA{locationId} = sortedAreaNum;
+                identified_BA{locationId,1} = sortedAreaNum;
+                identified_Gyrus{locationId,1} = uniqueGyrus;
+                
+                % put everything into an output
+                output.identified_BA = identified_BA;
+                output.identified_Gyrus = identified_Gyrus;
             end
         end
     end
