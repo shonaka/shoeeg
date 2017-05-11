@@ -3,8 +3,8 @@ classdef class_PREP
     %   Usage:
     %       prep_obj = class_PREP('input',EEG);
     %       outEEG = process(prep_obj);
-    %
-    %   !!! Make sure to disable highpass filtering inside PREP !!!
+    %       % visualize difference before and after
+    %       visualize(prep_obj);
     %
     %   Arguments:
     %       'input': EEG structure from EEGLAB (required)
@@ -114,9 +114,12 @@ classdef class_PREP
     
     properties
         % for handling EEG data
-        preEEG; % before PREP
+        preEEG;
         % for PREP parameters
         params = struct();
+        
+        % for output
+        postEEG;
     end
     
     methods (Access = public)
@@ -133,6 +136,9 @@ classdef class_PREP
             
             % input EEG (before PREP)
             obj.preEEG = get_varargin(varargin,'input',eeg_emptyset());
+            
+            % for output
+            obj.postEEG = eeg_emptyset();
             
             % ===== Other parameters structure for PREP =====
             % (for more to add, check getPipelineDefaults.m in PREP lib)
@@ -200,15 +206,15 @@ classdef class_PREP
     methods
         function outEEG = process(obj)
             % running the actual prep pipeline
-            [prepedEEG, ~] = prepPipeline(obj.preEEG, obj.params);
+            [obj.postEEG, ~] = prepPipeline(obj.preEEG, obj.params);
             % save interpolated channels as a result of PREP pipeline
             % this is only when some channels were removed
             try
-                [~, interporatedChannelNames] = eeg_decodechan(prepedEEG.chanlocs,...
-                    prepedEEG.etc.noiseDetection.reference.interpolatedChannels.all);
-                interporatedChannels = prepedEEG.etc.noiseDetection.reference.interpolatedChannels;
-                prepedEEG.etc.prep_interp_chans_name = interporatedChannelNames;
-                prepedEEG.etc.prep_interp_chans = interporatedChannels;
+                [~, interporatedChannelNames] = eeg_decodechan(obj.postEEG.chanlocs,...
+                    obj.postEEG.etc.noiseDetection.reference.interpolatedChannels.all);
+                interporatedChannels = obj.postEEG.etc.noiseDetection.reference.interpolatedChannels;
+                obj.postEEG.etc.prep_interp_chans_name = interporatedChannelNames;
+                obj.postEEG.etc.prep_interp_chans = interporatedChannels;
                 % for checking purposes
                 fprintf('Reporting interpolated channels:\n');
                 disp(interporatedChannelNames);
@@ -217,14 +223,19 @@ classdef class_PREP
                 fprintf('No channels were removed using PREP\n');
             end
             % add note on processing steps
-            if isfield(obj.preEEG,'process_step') == 0
-                obj.preEEG.process_step = [];
-                obj.preEEG.process_step{1} = 'PREP';
+            if isfield(obj.postEEG,'process_step') == 0
+                obj.postEEG.process_step = [];
+                obj.postEEG.process_step{1} = 'PREP';
             else
-                obj.preEEG.process_step{end+1} = 'PREP';
+                obj.postEEG.process_step{end+1} = 'PREP';
             end
             % saving the PREP processed EEG
-            outEEG = prepedEEG;
+            outEEG = obj.postEEG;
+        end
+        
+        function visualize(obj)
+            % for visualizing pre and post EEG
+            vis_artifacts(obj.postEEG, obj.preEEG);
         end
     end
     

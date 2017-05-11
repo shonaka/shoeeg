@@ -1,17 +1,17 @@
-classdef class_reref
+classdef class_reref < handle
     % for computing Re-reference to average or Common Average Reference
     %   Usage:
     %       reref_obj = class_reref('input',EEG);
     %       EEG = process(reref_obj);
+    %       % visualize difference before and after
+    %       visualize(reref_obj);
     %
     %   Arguments:
     %       'input': EEG structure from EEGLAB (required)
-    %   
-    %   Options:
-    %       
     %
     %   Pre-requisites:
     %       EEGLAB: https://sccn.ucsd.edu/eeglab/
+    %       clean_rawdata plugin: http://sccn.ucsd.edu/wiki/Plugin_list_process
     
     % Copyright (C) 2017 Sho Nakagome (snakagome@uh.edu)
     %
@@ -31,6 +31,9 @@ classdef class_reref
     properties
         % for handling EEG data
         preEEG;
+        
+        % for outputEEG
+        postEEG;
     end
     
     methods (Access = public)
@@ -47,33 +50,38 @@ classdef class_reref
             
             % input EEG (before CAR)
             obj.preEEG = get_varargin(varargin,'input',eeg_emptyset());
+            
+            % copy input EEG to output EEG
+            obj.postEEG = eeg_emptyset();
         end
     end
     
     methods
-        function outEEG = process(obj)
+        function process(obj)
             % for checking purposes
             fprintf('Start running Common Average Reference ...\n');
             % Run CAR
-            obj.preEEG.nbchan = obj.preEEG.nbchan+1;
-            obj.preEEG.data(end+1,:) = zeros(1, obj.preEEG.pnts);
-            obj.preEEG.chanlocs(1,obj.preEEG.nbchan).labels = 'initialReference';
-            obj.preEEG = pop_reref(obj.preEEG, []);
-            obj.preEEG = pop_select(obj.preEEG,'nochannel',{'initialReference'});
+            obj.postEEG.nbchan = obj.preEEG.nbchan+1;
+            obj.postEEG.data(end+1,:) = zeros(1, obj.preEEG.pnts);
+            obj.postEEG.chanlocs(1,obj.preEEG.nbchan).labels = 'initialReference';
+            obj.postEEG = pop_reref(obj.preEEG, []);
+            obj.postEEG = pop_select(obj.preEEG,'nochannel',{'initialReference'});
             
             % for checking purposes
             fprintf('Finished running CAR.\n');
 
             % add note on processing steps
-            if isfield(obj.preEEG,'process_step') == 0
-                obj.preEEG.process_step = [];
-                obj.preEEG.process_step{1} = 'CAR';
+            if isfield(obj.postEEG,'process_step') == 0
+                obj.postEEG.process_step = [];
+                obj.postEEG.process_step{1} = 'CAR';
             else
-                obj.preEEG.process_step{end+1} = 'CAR';
+                obj.postEEG.process_step{end+1} = 'CAR';
             end
-            
-            % saving the CAR processed EEG
-            outEEG = obj.preEEG;
+        end
+        
+        function visualize(obj)
+            % for visualizing the difference between pre and post
+            vis_artifacts(obj.postEEG,obj.preEEG);
         end
     end
     
