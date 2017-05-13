@@ -1,9 +1,13 @@
-classdef class_ASRwrapper
+classdef class_ASRwrapper < handle
     % for running Artifact Subspace Reconstruction (ASR) wrapper
     % this is better than running ASR only one
     %   Usage:
     %       asr_obj = class_ASRwrapper('input',EEG);
-    %       outEEG = process(asr_obj);
+    %       process(asr_obj);
+    %       % extract processed EEG from object
+    %       EEG = asr_obj.postEEG;
+    %       % visualize difference before and after
+    %       visualize(asr_obj);
     %
     %   Arguments:
     %       'input': EEG structure from EEGLAB (required)
@@ -54,6 +58,9 @@ classdef class_ASRwrapper
         FlatlineCriterion;
         BurstCriterion;
         BurstCriterionRefMaxBadChns;
+        
+        % for outputEEG
+        postEEG;
     end
     
     methods (Access = public)
@@ -71,6 +78,9 @@ classdef class_ASRwrapper
             % input EEG
             obj.preEEG = get_varargin(varargin,'input',eeg_emptyset());
             
+            % copy input to the output
+            obj.postEEG = obj.preEEG;
+            
             % other parameters for ASR
             obj.FlatlineCriterion = get_varargin(varargin,'FlatlineCriterion',5);
             obj.BurstCriterion = get_varargin(varargin,'BurstCriterion',5);
@@ -80,12 +90,12 @@ classdef class_ASRwrapper
     end
     
     methods
-        function outEEG = process(obj)
+        function process(obj)
             % for checking purposes
             fprintf('Start running ASR wrapper ...\n');
             
             % Run ASR wrapper with options
-            obj.preEEG = clean_artifacts(obj.preEEG, ...
+            obj.postEEG = clean_artifacts(obj.preEEG, ...
                 'FlatlineCriterion', obj.FlatlineCriterion,...
                 'Highpass',         'off',... % disabled should be handled by PREP
                 'ChannelCriterion',  'off',... % disabled
@@ -95,18 +105,20 @@ classdef class_ASRwrapper
                 'BurstCriterionRefMaxBadChns', obj.BurstCriterionRefMaxBadChns);
             
             % add note on processing steps
-            if isfield(obj.preEEG,'process_step') == 0
-                obj.preEEG.process_step = [];
-                obj.preEEG.process_step{1} = 'ASR';
+            if isfield(obj.postEEG,'process_step') == 0
+                obj.postEEG.process_step = [];
+                obj.postEEG.process_step{1} = 'ASR';
             else
-                obj.preEEG.process_step{end+1} = 'ASR';
+                obj.postEEG.process_step{end+1} = 'ASR';
             end
             
             % for checking purposes
             fprintf('Finished running ASR.\n');
-            
-            % saving the ASR processed EEG
-            outEEG = obj.preEEG;
+        end
+        
+        function visualize(obj)
+            % for visualizing the difference between pre and post
+            vis_artifacts(obj.postEEG,obj.preEEG);
         end
     end
     

@@ -1,8 +1,12 @@
-classdef class_inspectICs
+classdef class_inspectICs < handle
     % for running automatic IC rejection suggestions
     %   Usage:
     %       inspect_obj = class_inspectICs('input',EEG);
-    %       EEG = process(inspect_obj);
+    %       process(inspect_obj);
+    %       % extract the output EEG from object
+    %       EEG = inspect_obj.postEEG;
+    %       % for visualizing components
+    %       visualize(inspect_obj);
     %
     %   Arguments:
     %       'input': EEG structure from EEGLAB (required)
@@ -82,6 +86,9 @@ classdef class_inspectICs
         do_ADJUST;
         do_MARA;
         opt_noplot;
+        
+        % for output
+        postEEG;
     end
     
     methods (Access = public)
@@ -99,6 +106,9 @@ classdef class_inspectICs
             % input EEG
             obj.preEEG = get_varargin(varargin,'input',eeg_emptyset());
             
+            % copy input to the output
+            obj.postEEG = obj.preEEG;
+            
             % ===== Other parameters for DIPFIT and SASICA =====
             obj.threshold_RV = get_varargin(varargin,'threshold_RV',20);
             obj.trial_focal = get_varargin(varargin,'trial_focal',0);
@@ -115,7 +125,7 @@ classdef class_inspectICs
     end
     
     methods
-        function outEEG = process(obj)
+        function process(obj)
             % Step 1: Run dipfit rejection to find RV > threshold
             obj.preEEG.dipfit.model = dipfit_reject(obj.preEEG.dipfit.model,...
                 obj.threshold_RV/100);
@@ -144,20 +154,24 @@ classdef class_inspectICs
             cfg.MARA.enable = obj.do_MARA;
             cfg.opts.noplot = obj.opt_noplot;
             % run SASICA
-            [obj.preEEG, cfg] = eeg_SASICA(obj.preEEG, cfg);
+            [obj.postEEG, cfg] = eeg_SASICA(obj.preEEG, cfg);
             
             % add note on processing steps
-            if isfield(obj.preEEG,'process_step') == 0
-                obj.preEEG.process_step = [];
-                obj.preEEG.process_step{1} = 'inspectICs';
+            if isfield(obj.postEEG,'process_step') == 0
+                obj.postEEG.process_step = [];
+                obj.postEEG.process_step{1} = 'inspectICs';
             else
-                obj.preEEG.process_step{end+1} = 'inspectICs';
+                obj.postEEG.process_step{end+1} = 'inspectICs';
             end
             
             % saving the processed EEG
-            obj.preEEG.reject.residualVarianceReject = rejectdip;
-            obj.preEEG.etc.SASICA_config = cfg;
-            outEEG = obj.preEEG;
+            obj.postEEG.reject.residualVarianceReject = rejectdip;
+            obj.postEEG.etc.SASICA_config = cfg;
+        end
+        
+        function visualize(obj)
+            % for visualizing identified components
+            pop_selectcomps(obj.postEEG);
         end
     end
     

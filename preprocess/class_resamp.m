@@ -1,8 +1,10 @@
-classdef class_resamp
+classdef class_resamp < handle
     % for resampling EEGLAB structure data (better than normal resample.m)
     %   Usage:
     %       resamp_obj = class_resamp('input',EEG,'resampleFreq',100);
-    %       EEG = process(resamp_obj);
+    %       process(resamp_obj);
+    %       % extract processed EEG from object
+    %       EEG = resamp_obj.postEEG;
     %
     %   Arguments:
     %       'input': EEG structure from EEGLAB (required)
@@ -42,6 +44,9 @@ classdef class_resamp
         
         % other parameters
         resampleFreq;
+        
+        % for outputEEG
+        postEEG;
     end
     
     methods (Access = public)
@@ -59,13 +64,16 @@ classdef class_resamp
             % input EEG
             obj.preEEG = get_varargin(varargin,'input',eeg_emptyset());
             
+            % copy input to the output
+            obj.postEEG = obj.preEEG;
+            
             % other parameters
             obj.resampleFreq = get_varargin(varargin,'resampFreq',100);
         end
     end
     
     methods
-        function outEEG = process(obj)
+        function process(obj)
             % for checking purposes
             fprintf('Start resampling ...\n');
             
@@ -73,25 +81,22 @@ classdef class_resamp
             orisetname = obj.preEEG.setname;
             
             % run resample in EEGLAB function
-            obj.preEEG = pop_resample(obj.preEEG, obj.resampleFreq);
+            obj.postEEG = pop_resample(obj.preEEG, obj.resampleFreq);
             
             % for checking purposes
             fprintf('Finished running resample in eeglab function.\n');
 
             % add note on processing steps
-            if isfield(obj.preEEG,'process_step') == 0
-                obj.preEEG.process_step = [];
-                obj.preEEG.process_step{1} = 'Resample';
+            if isfield(obj.postEEG,'process_step') == 0
+                obj.postEEG.process_step = [];
+                obj.postEEG.process_step{1} = 'Resample';
             else
-                obj.preEEG.process_step{end+1} = 'Resample';
+                obj.postEEG.process_step{end+1} = 'Resample';
             end
             try
-                obj.preEEG.setname = [orisetname,'_resamp'];
+                obj.postEEG.setname = [orisetname,'_resamp'];
             catch e
             end
-            
-            % saving the CAR processed EEG
-            outEEG = obj.preEEG;
         end
     end
     

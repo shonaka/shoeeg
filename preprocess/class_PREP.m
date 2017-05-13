@@ -138,8 +138,8 @@ classdef class_PREP < handle
             % input EEG (before PREP)
             obj.preEEG = get_varargin(varargin,'input',eeg_emptyset());
             
-            % for output
-            obj.postEEG = eeg_emptyset();
+            % copy input to the output
+            obj.postEEG = obj.preEEG;
             
             % ===== Other parameters structure for PREP =====
             % (for more to add, check getPipelineDefaults.m in PREP lib)

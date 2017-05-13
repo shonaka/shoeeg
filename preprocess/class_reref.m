@@ -3,6 +3,7 @@ classdef class_reref < handle
     %   Usage:
     %       reref_obj = class_reref('input',EEG);
     %       process(reref_obj);
+    %       % extract processed EEG from object
     %       EEG = reref_obj.postEEG;
     %       % visualize difference before and after
     %       visualize(reref_obj);
@@ -52,8 +53,8 @@ classdef class_reref < handle
             % input EEG (before CAR)
             obj.preEEG = get_varargin(varargin,'input',eeg_emptyset());
             
-            % copy input EEG to output EEG
-            obj.postEEG = eeg_emptyset();
+            % copy input to the output
+            obj.postEEG = obj.preEEG;
         end
     end
     

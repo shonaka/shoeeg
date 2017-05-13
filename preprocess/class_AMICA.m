@@ -1,9 +1,11 @@
-classdef class_AMICA
+classdef class_AMICA < handle
     % for running AMICA
     %   Usage:
     %       % try reducing maxiter if there's an error
     %       amica_obj = class_AMICA('input',EEG,'maxiter',1000);
-    %       outEEG = process(amica_obj);
+    %       process(amica_obj);
+    %       % extract processed EEG from object
+    %       EEG = amica_obj.postEEG;
     %
     %   Arguments:
     %       'input': EEG structure from EEGLAB (required)
@@ -55,6 +57,9 @@ classdef class_AMICA
         maxiter;
         do_sphere;
         do_newton;
+        
+        % for outputEEG
+        postEEG;
     end
     
     methods (Access = public)
@@ -72,6 +77,9 @@ classdef class_AMICA
             % input EEG (before AMICA)
             obj.preEEG = get_varargin(varargin,'input',eeg_emptyset());
             
+            % copy input to the output
+            obj.postEEG = obj.preEEG;
+            
             % other parameters for AMICA
             obj.M = get_varargin(varargin,'M',1);
             obj.m = get_varargin(varargin,'m',3);
@@ -82,7 +90,7 @@ classdef class_AMICA
     end
     
     methods
-        function outEEG = process(obj)
+        function process(obj)
             % for checking purposes
             fprintf('Start running AMICA...\n');
             warning('Make sure you compensate for the rank deficiency in the previous processes.');
@@ -97,26 +105,23 @@ classdef class_AMICA
                 obj.do_newton);
             
             % put the results back into the structure
-            obj.preEEG.icaweights = W;
-            obj.preEEG.icasphere  = S;
-            obj.preEEG = eeg_checkset(obj.preEEG, 'ica');
+            obj.postEEG.icaweights = W;
+            obj.postEEG.icasphere  = S;
+            obj.postEEG = eeg_checkset(obj.postEEG, 'ica');
             % add note on processing steps
-            if isfield(obj.preEEG,'process_step') == 0
-                obj.preEEG.process_step = [];
-                obj.preEEG.process_step{1} = 'AMICA';
+            if isfield(obj.postEEG,'process_step') == 0
+                obj.postEEG.process_step = [];
+                obj.postEEG.process_step{1} = 'AMICA';
             else
-                obj.preEEG.process_step{end+1} = 'AMICA';
+                obj.postEEG.process_step{end+1} = 'AMICA';
             end
             try
-                obj.preEEG.setname = [obj.preEEG.setname,'_AMICA'];
+                obj.postEEG.setname = [obj.postEEG.setname,'_AMICA'];
             catch e
             end
             
             % for checking purposes
             fprintf('Finished running AMICA.\n');
-            
-            % saving the AMICA processed EEG
-            outEEG = obj.preEEG;
         end
     end
     

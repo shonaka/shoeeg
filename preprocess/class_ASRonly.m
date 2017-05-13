@@ -1,8 +1,12 @@
-classdef class_ASRonly
+classdef class_ASRonly < handle
     % for running only the Artifact Subspace Reconstruction (ASR)
     %   Usage:
     %       asr_obj = class_ASRonly('input',EEG,'cutoff',5);
-    %       outEEG = process(asr_obj);
+    %       process(asr_obj);
+    %       % extract processed EEG from object
+    %       EEG = asr_obj.postEEG;
+    %       % visualize difference before and after
+    %       visualize(asr_obj);
     %
     %   Arguments:
     %       'input': EEG structure from EEGLAB (required)
@@ -62,6 +66,9 @@ classdef class_ASRonly
         ref_tolerances;
         ref_wndlen;
         usegpu; % not working should be always false
+        
+        % for outputEEG
+        postEEG;
     end
     
     methods (Access = public)
@@ -79,6 +86,9 @@ classdef class_ASRonly
             % input EEG
             obj.preEEG = get_varargin(varargin,'input',eeg_emptyset());
             
+            % copy input to the output
+            obj.postEEG = obj.preEEG;
+            
             % other parameters for ASR
             obj.cutoff = get_varargin(varargin,'cutoff',5);
             obj.windowlen = get_varargin(varargin,'windowlen',0.5);
@@ -92,12 +102,12 @@ classdef class_ASRonly
     end
     
     methods
-        function outEEG = process(obj)
+        function process(obj)
             % for checking purposes
             fprintf('Start running ASR...\n');
             
             % Run ASR with the options
-            obj.preEEG = clean_asr(obj.preEEG,...
+            obj.postEEG = clean_asr(obj.preEEG,...
                 obj.cutoff,...
                 obj.windowlen,...
                 obj.stepsize,...
@@ -108,18 +118,20 @@ classdef class_ASRonly
                 obj.usegpu);
             
             % add note on processing steps
-            if isfield(obj.preEEG,'process_step') == 0
-                obj.preEEG.process_step = [];
-                obj.preEEG.process_step{1} = 'ASR';
+            if isfield(obj.postEEG,'process_step') == 0
+                obj.postEEG.process_step = [];
+                obj.postEEG.process_step{1} = 'ASR';
             else
-                obj.preEEG.process_step{end+1} = 'ASR';
+                obj.postEEG.process_step{end+1} = 'ASR';
             end
             
             % for checking purposes
             fprintf('Finished running ASR.\n');
-            
-            % saving the ASR processed EEG
-            outEEG = obj.preEEG;
+        end
+        
+        function visualize(obj)
+            % for visualizing the difference between pre and post
+            vis_artifacts(obj.postEEG,obj.preEEG);
         end
     end
     

@@ -1,8 +1,12 @@
-classdef class_filtIIR
+classdef class_filtIIR < handle
     % for filtering using zero-phase IIR filter (butterworth)
     %   Usage:
     %       filt_obj = class_filtIIR('input',EEG,'cutoff',0.1,'type','high','order',2);
-    %       EEG = process(filt_obj);
+    %       process(filt_obj);
+    %       % extract the output EEG from object
+    %       EEG = filt_obj.postEEG;
+    %       % for visualization
+    %       visualize(filt_obj);
     %
     %   Arguments:
     %       'input': EEG structure from EEGLAB (required)
@@ -40,6 +44,9 @@ classdef class_filtIIR
         cutoff;
         type;
         order;
+        
+        % for output
+        postEEG;
     end
     
     methods (Access = public)
@@ -57,6 +64,9 @@ classdef class_filtIIR
             % input EEG (before CAR)
             obj.preEEG = get_varargin(varargin,'input',eeg_emptyset());
             
+            % copy input to the output
+            obj.postEEG = obj.preEEG;
+            
             % other parameters
             obj.cutoff = get_varargin(varargin,'cutoff',0.1);
             obj.type = get_varargin(varargin,'type','high');
@@ -65,7 +75,7 @@ classdef class_filtIIR
     end
     
     methods
-        function outEEG = process(obj)
+        function process(obj)
             % for checking purposes
             fprintf('Start running filter ...\n');
             
@@ -89,16 +99,20 @@ classdef class_filtIIR
             fprintf('Finished running class_filtIIR.\n');
 
             % add note on processing steps
-            if isfield(obj.preEEG,'process_step') == 0
-                obj.preEEG.process_step = [];
-                obj.preEEG.process_step{1} = obj.type;
+            if isfield(obj.postEEG,'process_step') == 0
+                obj.postEEG.process_step = [];
+                obj.postEEG.process_step{1} = obj.type;
             else
-                obj.preEEG.process_step{end+1} = obj.type;
+                obj.postEEG.process_step{end+1} = obj.type;
             end
             
             % saving the filter processed EEG
-            obj.preEEG.data = filtered_data;
-            outEEG = obj.preEEG;
+            obj.postEEG.data = filtered_data;
+        end
+        
+        function visualize(obj)
+            % for visualizing the difference between pre and post
+            vis_artifacts(obj.postEEG,obj.preEEG);
         end
     end
     

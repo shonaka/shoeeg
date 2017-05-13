@@ -1,8 +1,10 @@
-classdef class_DIPFIT
+classdef class_DIPFIT < handle
     % for running DIPFIT
     %   Usage:
     %       dipfit_obj = class_DIPFIT('input',EEG);
-    %       EEG = process(dipfit_obj);
+    %       process(dipfit_obj);
+    %       % extract processed EEG from object
+    %       EEG = dipfit_obj.postEEG;
     %
     %   Arguments:
     %       'input': EEG structure from EEGLAB (required)
@@ -62,6 +64,9 @@ classdef class_DIPFIT
         threshold_grid;
         threshold_twodip;
         plot_opt;
+        
+        % for outputEEG
+        postEEG;
     end
     
     methods (Access = public)
@@ -79,6 +84,9 @@ classdef class_DIPFIT
             % input EEG
             obj.preEEG = get_varargin(varargin,'input',eeg_emptyset());
             
+            % copy input to the output
+            obj.postEEG = obj.preEEG;
+            
             % ===== Other parameters for DIPFIT =====
             obj.threshold_grid = get_varargin(varargin,'threshold_grid',100);
             obj.threshold_twodip = get_varargin(varargin,'threshold_twodip',35);
@@ -88,7 +96,7 @@ classdef class_DIPFIT
     end
     
     methods
-        function outEEG = process(obj)
+        function process(obj)
             % load default settings from dipfit plugin
             dipfitdefs;
             
@@ -100,7 +108,7 @@ classdef class_DIPFIT
                 coregister(obj.preEEG.chanlocs,template_models(2).chanfile,...
                 'mesh', template_models(2).hdmfile,...
                 'warp', 'auto', 'manual', 'off');
-            obj.preEEG = pop_dipfit_settings(obj.preEEG,'hdmfile',template_models(2).hdmfile,...
+            obj.postEEG = pop_dipfit_settings(obj.preEEG,'hdmfile',template_models(2).hdmfile,...
                 'coordformat','MNI',...
                 'mrifile',template_models(2).mrifile,...
                 'chanfile',template_models(2).chanfile,...
@@ -110,25 +118,22 @@ classdef class_DIPFIT
             %   this includes pop_dipfit_gridsearch and non-linear fit
             %   here, not rejecting anything, thus threshold = 100
             %   later, with dipfit_reject, reject RV > 20% or something
-            obj.preEEG = pop_multifit(obj.preEEG, 1:obj.preEEG.nbchan,...
+            obj.postEEG = pop_multifit(obj.postEEG, 1:obj.postEEG.nbchan,...
                 'threshold', obj.threshold_grid, 'dipplot', 'off',...
                 'plotopt', obj.plot_opt);
             
             % Step 3: Search for and estimate symmetrically constrained
             % bilateral dipoles
             %   LRR = large rectangular region
-            obj.preEEG = fitTwoDipoles(obj.preEEG, 'LRR', obj.threshold_twodip);
+            obj.postEEG = fitTwoDipoles(obj.postEEG, 'LRR', obj.threshold_twodip);
             
             % add note on processing steps
-            if isfield(obj.preEEG,'process_step') == 0
-                obj.preEEG.process_step = [];
-                obj.preEEG.process_step{1} = 'DIPFIT';
+            if isfield(obj.postEEG,'process_step') == 0
+                obj.postEEG.process_step = [];
+                obj.postEEG.process_step{1} = 'DIPFIT';
             else
-                obj.preEEG.process_step{end+1} = 'DIPFIT';
+                obj.postEEG.process_step{end+1} = 'DIPFIT';
             end
-            
-            % saving the DIPFIT processed EEG
-            outEEG = obj.preEEG;
         end
     end
     
