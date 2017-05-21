@@ -10,8 +10,10 @@ classdef class_scatter
     %       'Y': data for y-axis (mandatory)
     %
     %   Options:
-    %       'facecolor': what color you want for the plot
-    %       'marksize': size for marker
+    %       'facecolor': what color you want for the plot [default: 'b']
+    %       'marksize': size for marker [default: 25]
+    %       'marker': marker type [default: 'o']
+    %       'linewidth': line width [default: 0.5]
     %
     
     % Copyright (C) 2017 Sho Nakagome (snakagome@uh.edu)
@@ -37,6 +39,8 @@ classdef class_scatter
         X;
         facecolor;
         marksize;
+        marker;
+        linewidth;
     end
     
     methods (Access = public)
@@ -49,16 +53,24 @@ classdef class_scatter
             obj.X = get_varargin(varargin,'X',1:length(obj.Y));
             obj.facecolor = get_varargin(varargin,'facecolor','b');
             obj.marksize = get_varargin(varargin,'marksize',25);
+            obj.marker = get_varargin(varargin,'marker','o');
+            obj.linewidth = get_varargin(varargin,'linewidth',0.5);
         end
     end
     
     methods
         function output = process(obj)            
             % plotting
-            scat_plot = scatter(obj.X,obj.Y,obj.marksize,...
-                'MarkerEdgeColor','k',...
-                'MarkerFaceColor',obj.facecolor);
-            
+            if obj.marker == 'o'
+                scat_plot = scatter(obj.X,obj.Y,obj.marksize,obj.marker,...
+                    'MarkerEdgeColor','k',...
+                    'MarkerFaceColor',obj.facecolor,...
+                    'LineWidth',obj.linewidth);
+            else
+                scat_plot = scatter(obj.X,obj.Y,obj.marksize,obj.marker,...
+                    'MarkerEdgeColor',obj.facecolor,...
+                    'LineWidth',obj.linewidth);
+            end
             % some other things to make the plot look nicer
             % this cannot be controlled by defaults
             ax1 = gca;
