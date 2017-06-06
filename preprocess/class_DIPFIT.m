@@ -21,18 +21,24 @@ classdef class_DIPFIT < handle
     %       'plot_opt': plot option for dipplot [default: {'normlen','on'}
     %                   'image', 'fullmri'?
     %
+    %       'mri_input': for providing individual MRI normalized to MNI
+    %                    coordinates using SPM. For more information about
+    %                    how to do normalization, take a look at:
+    %                    https://sccn.ucsd.edu/wiki/A09:_Using_custom_MRI_from_individual_subjects
+    %
     %   Pre-requisites:
     %       EEGLAB: https://sccn.ucsd.edu/eeglab/
     %       DIPFIT2: https://sccn.ucsd.edu/wiki/A08:_DIPFIT
     %       fitTwoDipoles: EEGLAB plugin search from the GUI
+    %       Fieldtrip-lite: Extension in EEGLAB to use fieldtrip functions
     %
     %   References:
-    %       <General dipfit: better to check the above wiki for dipfit>
+    %       < General dipfit: better to check the above wiki for dipfit >
     %       Delorme, Arnaud, et al. "EEGLAB, SIFT, NFT, BCILAB, and ERICA:
     %       new tools for advanced EEG processing." 
     %       Computational intelligence and neuroscience 2011 (2011): 10.
     %
-    %       <For Step 4: fitTwoDipoles>
+    %       < For Step 4: fitTwoDipoles >
     %       Piazza, Caterina, et al. "An Automated Function for Identifying
     %       EEG Independent Components Representing Bilateral Source Activity."
     %       XIV Mediterranean Conference on Medical and Biological Engineering
@@ -64,6 +70,7 @@ classdef class_DIPFIT < handle
         threshold_grid;
         threshold_twodip;
         plot_opt;
+        mri_input;
         
         % for outputEEG
         postEEG;
@@ -72,25 +79,20 @@ classdef class_DIPFIT < handle
     methods (Access = public)
         % defining a constructor
         function obj = class_DIPFIT(varargin)
-            % add path to dependencies
-            if ispc == 1
-                sep = '\';
-            elseif isunix == 1
-                sep = '/';
-            end
-            addpath(['..',sep,'dependencies']);
-            % make sure to addpath to eeglab as well
-            
             % input EEG
             obj.preEEG = get_varargin(varargin,'input',eeg_emptyset());
             
             % copy input to the output
             obj.postEEG = obj.preEEG;
             
+            % load default settings from dipfit plugin
+            dipfitdefs;
+            
             % ===== Other parameters for DIPFIT =====
             obj.threshold_grid = get_varargin(varargin,'threshold_grid',100);
             obj.threshold_twodip = get_varargin(varargin,'threshold_twodip',35);
             obj.plot_opt = get_varargin(varargin,'plot_opt',{'normlen','on'});
+            obj.mri_input = get_varargin(varargin,'mri_input',template_models(2).mrifile);
             % ===============================================
         end
     end
@@ -110,7 +112,7 @@ classdef class_DIPFIT < handle
                 'warp', 'auto', 'manual', 'off');
             obj.postEEG = pop_dipfit_settings(obj.preEEG,'hdmfile',template_models(2).hdmfile,...
                 'coordformat','MNI',...
-                'mrifile',template_models(2).mrifile,...
+                'mrifile',obj.mri_input,...
                 'chanfile',template_models(2).chanfile,...
                 'coord_transform',coordinateTransformParameters);
             
