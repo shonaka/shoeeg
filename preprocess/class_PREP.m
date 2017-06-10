@@ -129,6 +129,7 @@ classdef class_PREP < handle
             % add path to dependencies
             sep = filesep;
             addpath(which('dependencies'));
+			
             % make sure to addpath to eeglab as well
             
             % input EEG (before PREP)
