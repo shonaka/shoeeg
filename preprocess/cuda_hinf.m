@@ -1,4 +1,4 @@
-function output = cuda_hinf(EEG, EOG, qhinf, gamma)
+function output = cuda_hinf(eegdata, eogdata, qhinf, gamma)
 % ===== H-infinity filter using cuda =====
 % If you have any questions, send an email to Sho Nakagome
 % (email: snakagome@uh.edu)
@@ -8,14 +8,18 @@ function output = cuda_hinf(EEG, EOG, qhinf, gamma)
 % https://www.mathworks.com/discovery/matlab-gpu.html
 %
 % Input:
-% - EEG: EEG data in a matrix (channels x samples)
-% - EOG: which channels are EOG? (In Avatar project, 17, 22, 41, 46)
+% - EEG: eeg data (channel x samples)
+% - EOG: eog data (channel x samples)
+%        1st row: Up (In avatar 17, moved from FT9)
+%        2nd row: Down (In avatar 22, moved from FT10)
+%        3rd row: Left (In avatar 41, moved from TP9)
+%        4th row: Right (In avatar 46, moved from TP10)
 % - qhinf: deviation factor from gamma <= 1 condition for time varying hinf
 % weight estimation problem (1e-10)
 % - gamma: supression control (1 - 2 maybe 1.15 is good or 2 for avatar)
 %
 % Example:
-%   hinfEEG = cuda_hinf(EEG, [17,22,41,46], 1e-10, 2);
+%   hinfEEG = cuda_hinf(EEG.data, eogdata, 1e-10, 2);
 % ===============================
 
 % Copyright (C) 2017 Sho Nakagome (snakgome@uh.edu)
@@ -37,18 +41,24 @@ function output = cuda_hinf(EEG, EOG, qhinf, gamma)
 addpath('./ptx_cuda_files');
 
 %% Separate EEG and EOG
-% Remove EOG channels from EEG
-EEGwoEOG = EEG;
-EEGwoEOG(EOG, :) = [];
+EEGwoEOG = eegdata;
 % get the size of a matrix
 [M, N] = size(EEGwoEOG);
+
+% make sure to convert into double before putting in
+EEGwoEOG = double(EEGwoEOG);
+
 % put it into a gpuArray
 gpu_EEG = gpuArray(EEGwoEOG);
 
-% Calcuate the EOG vector for H=infinity
-eogUD = EEG(EOG(1), :) - EEG(EOG(2), :);
-eogLR = EEG(EOG(3), :) - EEG(EOG(4), :);
+% Calcuate the EOG vector for H-infinity
+eogUD = eogdata(1, :) - eogdata(2, :);
+eogLR = eogdata(3, :) - eogdata(4, :);
 eogRef = [eogUD; eogLR; zeros(1, length(eogUD))];
+
+% make sure to convert into double before putting in
+eogRef = double(eogRef);
+
 % put it into a gpuArray
 gpu_EOG = gpuArray(eogRef);
 

@@ -127,12 +127,8 @@ classdef class_PREP < handle
         % defining a constructor
         function obj = class_PREP(varargin)
             % add path to dependencies
-            if ispc == 1
-                sep = '\';
-            elseif isunix == 1
-                sep = '/';
-            end
-            addpath(['..',sep,'dependencies']);
+            sep = filesep;
+            addpath(which('dependencies'));
             % make sure to addpath to eeglab as well
             
             % input EEG (before PREP)
