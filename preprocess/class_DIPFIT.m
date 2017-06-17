@@ -26,6 +26,11 @@ classdef class_DIPFIT < handle
     %                    how to do normalization, take a look at:
     %                    https://sccn.ucsd.edu/wiki/A09:_Using_custom_MRI_from_individual_subjects
     %
+    %       'head_model': for providing individual MRI based head models.
+    %                     You can create this using Fieldtrip toolbox.
+    %                     For more reference, take a look at:
+    %                     http://www.fieldtriptoolbox.org/tutorial/headmodel_eeg_bem
+    %
     %   Pre-requisites:
     %       EEGLAB: https://sccn.ucsd.edu/eeglab/
     %       DIPFIT2: https://sccn.ucsd.edu/wiki/A08:_DIPFIT
@@ -71,6 +76,7 @@ classdef class_DIPFIT < handle
         threshold_twodip;
         plot_opt;
         mri_input;
+        head_model;
         
         % for outputEEG
         postEEG;
@@ -93,6 +99,7 @@ classdef class_DIPFIT < handle
             obj.threshold_twodip = get_varargin(varargin,'threshold_twodip',35);
             obj.plot_opt = get_varargin(varargin,'plot_opt',{'normlen','on'});
             obj.mri_input = get_varargin(varargin,'mri_input',template_models(2).mrifile);
+            obj.head_model = get_varargin(varargin,'head_model',template_models(2).hdmfile);
             % ===============================================
         end
     end
@@ -107,10 +114,10 @@ classdef class_DIPFIT < handle
             %   coregister to deal with difference of digitized chanlocs with
             %   normal chanlocs.
             [~,coordinateTransformParameters] = ...
-                coregister(obj.preEEG.chanlocs,template_models(2).chanfile,...
-                'mesh', template_models(2).hdmfile,...
+                coregister(obj.preEEG.chanlocs, template_models(2).chanfile,...
+                'mesh', obj.head_model,...
                 'warp', 'auto', 'manual', 'off');
-            obj.postEEG = pop_dipfit_settings(obj.preEEG,'hdmfile',template_models(2).hdmfile,...
+            obj.postEEG = pop_dipfit_settings(obj.preEEG,'hdmfile',obj.head_model,...
                 'coordformat','MNI',...
                 'mrifile',obj.mri_input,...
                 'chanfile',template_models(2).chanfile,...
