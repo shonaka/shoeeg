@@ -95,11 +95,7 @@ classdef class_inspectICs < handle
         % defining a constructor
         function obj = class_inspectICs(varargin)
             % add path to dependencies
-            if ispc == 1
-                sep = '\';
-            elseif isunix == 1
-                sep = '/';
-            end
+            sep = filesep;
             addpath(['..',sep,'dependencies']);
             % make sure to addpath to eeglab as well
             

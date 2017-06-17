@@ -75,11 +75,7 @@ classdef class_ASRonly < handle
         % defining a constructor
         function obj = class_ASRonly(varargin)
             % add path to dependencies
-            if ispc == 1
-                sep = '\';
-            elseif isunix == 1
-                sep = '/';
-            end
+            sep = filesep;
             addpath(['..',sep,'dependencies']);
             % make sure to addpath to eeglab as well
             
