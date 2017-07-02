@@ -131,6 +131,7 @@ classdef class_DIPFIT < handle
                 obj.postEEG = pop_multifit(obj.postEEG, 1:obj.postEEG.nbchan,...
                     'threshold', obj.threshold_grid, 'dipplot', 'off',...
                     'plotopt', obj.plot_opt);
+                obj.postEEG.etc.dipfit_used = 'individualBEM';
             catch e
                 fprintf('Something went wrong. Maybe the input head model issue\n');
                 fprintf('Running with template files\n');
@@ -146,6 +147,7 @@ classdef class_DIPFIT < handle
                 obj.postEEG = pop_multifit(obj.postEEG, 1:obj.postEEG.nbchan,...
                     'threshold', obj.threshold_grid, 'dipplot', 'off',...
                     'plotopt', obj.plot_opt);
+                obj.postEEG.etc.dipfit_used = 'standard';
             end
             
             % Step 3: Search for and estimate symmetrically constrained
