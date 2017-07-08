@@ -18,6 +18,10 @@ classdef class_DIPFIT < handle
     %       'threshold_twodip': threshold value for "true" peak selection
     %                           [default: 35]
     %
+    %       'dipplot_show': whether to show the 3D interactive view of
+    %                       dipole fitting results after the process
+    %                       [default: 'off']
+    %
     %       'plot_opt': plot option for dipplot [default: {'normlen','on'}
     %                   'image', 'fullmri'?
     %
@@ -30,6 +34,10 @@ classdef class_DIPFIT < handle
     %                     You can create this using Fieldtrip toolbox.
     %                     For more reference, take a look at:
     %                     http://www.fieldtriptoolbox.org/tutorial/headmodel_eeg_bem
+    %
+    %       'disable_fitTwo': disable fitTwoDipoles plugin when you are
+    %       feeding your own BEM since it somehow replaces the mesh to
+    %       spherical.
     %
     %   Pre-requisites:
     %       EEGLAB: https://sccn.ucsd.edu/eeglab/
@@ -74,9 +82,11 @@ classdef class_DIPFIT < handle
         % for DIPFIT parameters
         threshold_grid;
         threshold_twodip;
+        dipplot_show;
         plot_opt;
         mri_input;
         head_model;
+        disable_fitTwo;
         
         % for outputEEG
         postEEG;
@@ -97,9 +107,11 @@ classdef class_DIPFIT < handle
             % ===== Other parameters for DIPFIT =====
             obj.threshold_grid = get_varargin(varargin,'threshold_grid',100);
             obj.threshold_twodip = get_varargin(varargin,'threshold_twodip',35);
+            obj.dipplot_show = get_varargin(varargin,'dipplot_show','off');
             obj.plot_opt = get_varargin(varargin,'plot_opt',{'normlen','on'});
             obj.mri_input = get_varargin(varargin,'mri_input',template_models(2).mrifile);
             obj.head_model = get_varargin(varargin,'head_model',template_models(2).hdmfile);
+            obj.disable_fitTwo = get_varargin(varargin,'disable_fitTwo','on');
             % ===============================================
         end
     end
@@ -128,8 +140,8 @@ classdef class_DIPFIT < handle
                 %   this includes pop_dipfit_gridsearch and non-linear fit
                 %   here, not rejecting anything, thus threshold = 100
                 %   later, with dipfit_reject, reject RV > 20% or something
-                obj.postEEG = pop_multifit(obj.postEEG, 1:obj.postEEG.nbchan,...
-                    'threshold', obj.threshold_grid, 'dipplot', 'off',...
+                obj.postEEG = pop_multifit_sho(obj.postEEG, 1:obj.postEEG.nbchan,...
+                    'threshold', obj.threshold_grid, 'dipplot', obj.dipplot_show,...
                     'plotopt', obj.plot_opt);
                 obj.postEEG.etc.dipfit_used = 'individualBEM';
             catch e
@@ -145,7 +157,7 @@ classdef class_DIPFIT < handle
                     'chanfile',template_models(2).chanfile,...
                     'coord_transform',coordinateTransformParameters);
                 obj.postEEG = pop_multifit(obj.postEEG, 1:obj.postEEG.nbchan,...
-                    'threshold', obj.threshold_grid, 'dipplot', 'off',...
+                    'threshold', obj.threshold_grid, 'dipplot', obj.dipplot_show,...
                     'plotopt', obj.plot_opt);
                 obj.postEEG.etc.dipfit_used = 'standard';
             end
