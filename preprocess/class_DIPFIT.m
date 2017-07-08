@@ -165,7 +165,11 @@ classdef class_DIPFIT < handle
             % Step 3: Search for and estimate symmetrically constrained
             % bilateral dipoles
             %   LRR = large rectangular region
-            obj.postEEG = fitTwoDipoles(obj.postEEG, 'LRR', obj.threshold_twodip);
+            if strcmpi(obj.disable_fitTwo,'on')
+                % do nothing
+            elseif strcmpi(obj.disable_fitTwo,'off')
+                obj.postEEG = fitTwoDipoles(obj.postEEG, 'LRR', obj.threshold_twodip);
+            end
             
             % add note on processing steps
             if isfield(obj.postEEG,'process_step') == 0
