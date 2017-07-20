@@ -8,6 +8,10 @@ classdef class_colors
     %       < For choosing color blind friendly colors >
     %       http://mkweb.bcgsc.ca/colorblind/
     %       http://jfly.iam.u-tokyo.ac.jp/color/#see
+    %
+    %       < Tips for designing scientific figures for color blind
+    %       readers>
+    %       http://www.somersault1824.com/tips-for-designing-scientific-figures-for-color-blind-readers/
     %       
     %       A. Light & P.J. Bartlein, "The End of the Rainbow? Color Schemes for
     %       Improved Data Graphics," Eos,Vol. 85, No. 40, 5 October 2004.
@@ -51,7 +55,9 @@ classdef class_colors
             obj.blind_friendly.color{5} = [0 114 178]./255; % Blue
             obj.blind_friendly.color{6} = [213 94 0]./255; % Vermillion
             obj.blind_friendly.color{7} = [204 121 167]./255; % Reddish Purple
-            obj.blind_friendly.color{8}= [0 0 0]; % Black
+            obj.blind_friendly.color{8} = [0 0 0]; % Black
+            obj.blind_friendly.color{9} = [146 73 0]./255; % Brown
+            obj.blind_friendly.color{10} = [73 0 146]./255; % Purple
             
             % artistic color combinations for 4 colors
                 % 03. Dark & Earthy

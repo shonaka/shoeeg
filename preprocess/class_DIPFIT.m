@@ -35,9 +35,7 @@ classdef class_DIPFIT < handle
     %                     For more reference, take a look at:
     %                     http://www.fieldtriptoolbox.org/tutorial/headmodel_eeg_bem
     %
-    %       'disable_fitTwo': disable fitTwoDipoles plugin when you are
-    %       feeding your own BEM since it somehow replaces the mesh to
-    %       spherical.
+    %       'disable_fitTwo': disable fitTwoDipoles plugin [default: 'off']
     %
     %   Pre-requisites:
     %       EEGLAB: https://sccn.ucsd.edu/eeglab/
@@ -111,7 +109,7 @@ classdef class_DIPFIT < handle
             obj.plot_opt = get_varargin(varargin,'plot_opt',{'normlen','on'});
             obj.mri_input = get_varargin(varargin,'mri_input',template_models(2).mrifile);
             obj.head_model = get_varargin(varargin,'head_model',template_models(2).hdmfile);
-            obj.disable_fitTwo = get_varargin(varargin,'disable_fitTwo','on');
+            obj.disable_fitTwo = get_varargin(varargin,'disable_fitTwo','off');
             % ===============================================
         end
     end
