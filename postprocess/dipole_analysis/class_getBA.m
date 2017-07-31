@@ -1,8 +1,13 @@
-classdef class_getBA
+classdef class_getBA < handle
     % for calculating the estimated Brodmann Area (BA)
     %   Usage:
     %       ba_obj = class_getBA('input',tal_coordinates);
-    %       identified_ba = process(ba_obj);
+    %       % Just to get approximate brodmann areas and gyruses
+    %       process(ba_obj);
+    %       % give number of clusters, talairach coordinates sorted in a
+    %       cell array as arguments to get the sorted Brodmann areas and
+    %       the Gyruses
+    %       output = getSortedBA(ba_obj, numclusts, tal_sorted);
     %
     %   Arguments:
     %       'input': input coordinates in Talairach (already converted
@@ -45,6 +50,12 @@ classdef class_getBA
         input;
         coordinate_type;
         search_spacing;
+        
+        % for outputs
+        brodmannAreas;
+        gyrus;
+        sorted_BAs;
+        sorted_Gyrus;
     end
     
     methods (Access = public)
@@ -60,11 +71,19 @@ classdef class_getBA
             obj.coordinate_type = get_varargin(varargin,'coordinate_type',1);
             obj.search_spacing = get_varargin(varargin,'search_spacing',5);
             % =============================
+            
+            % initialization
+            obj.brodmannAreas = {};
+            obj.gyrus = {};
+            obj.sorted_BAs = {};
+            obj.sorted_Gyrus = {};
         end
     end
     
     methods
-        function output = process(obj)
+        % for processing to estimate the Brodmann areas and approximate
+        % gyruses
+        function process(obj)
             % add path to talairach client java
             javaaddpath(which('talairach.jar'));
             % load Talairach java object and data
@@ -104,6 +123,16 @@ classdef class_getBA
                     end
                 end
                 
+                % if you couldn't find the Brodmann area, just get the
+                % name of the first two Gyrus
+                if exist('areaNum') == 0
+                    for i = 1:2
+                        splitText = hlp_split(char(labelsForLocation(i)),',');
+                        areaGyrusRegion = splitText{3};
+                        tmpGyrusRegion = [tmpGyrusRegion,areaGyrusRegion];
+                    end
+                end
+                
                 % sort identified BA number in order
                 sortedAreaNum = sort(unique(tmpAreaNum));
                 uniqueGyrus = unique(tmpGyrusRegion);
@@ -112,10 +141,48 @@ classdef class_getBA
                 identified_BA{locationId,1} = sortedAreaNum;
                 identified_Gyrus{locationId,1} = uniqueGyrus;
                 
-                % put everything into an output
-                output.identified_BA = identified_BA;
-                output.identified_Gyrus = identified_Gyrus;
+                % save the results into objects too
+                obj.brodmannAreas = identified_BA;
+                obj.gyrus = identified_Gyrus;
             end
+        end
+        
+        % for sorting the output into a cell arry for later plotting
+        function output = getSortedBA(obj, numclusts, tal_sorted)
+            % initializations
+            ba_idx = 0;
+            ba_sorted = cell(numclusts,1);
+            gyrus_sorted = cell(numclusts,1);
+            % run through a loop to sort information
+            for cl_idx = 1:numclusts
+                temp = [];
+                temp2 = [];
+                if size(tal_sorted{cl_idx},1) == 2
+                    ba_idx = ba_idx + 1;
+                    % for BA
+                    temp = [obj.brodmannAreas{ba_idx},obj.brodmannAreas{ba_idx+1}];
+                    ba_sorted{cl_idx,1} = unique(temp);
+                    % for Gyrus names
+                    temp2 = [obj.gyrus{ba_idx},obj.gyrus{ba_idx+1}];
+                    gyrus_sorted{cl_idx,1} = unique(temp2);
+                    ba_idx = ba_idx + 1;
+                elseif size(tal_sorted{cl_idx},1) == 1
+                    ba_idx = ba_idx + 1;
+                    % for BA
+                    ba_sorted{cl_idx,1} = obj.brodmannAreas{ba_idx};
+                    % for Gyrus names
+                    temp2 = obj.gyrus{ba_idx};
+                    gyrus_sorted{cl_idx,1} = unique(temp2);
+                end
+            end
+            
+            % save everything into the output
+            output.sorted_BAs = ba_sorted;
+            output.sorted_Gyrus = gyrus_sorted;
+            
+            % save them into the object too
+            obj.sorted_BAs = ba_sorted;
+            obj.sorted_Gyrus = gyrus_sorted;
         end
     end
     
