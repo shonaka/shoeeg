@@ -98,6 +98,9 @@ classdef class_getBA < handle
             
             % loop through the labels to obtain the information
             for locationId = 1:size(tal_xyz,1)
+                % initialize
+                clearvars splitText areaNum potentialBAname areaGyrusRegion
+                
                 % for temporally holding area number
                 tmpAreaNum = [];
                 tmpGyrusRegion = {};

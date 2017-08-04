@@ -1,11 +1,11 @@
 classdef class_psdtools
     % for calculating psds and some other related stuff
     %   Usage:
-    %       psd_obj = class_psdtools('input',EEG,'method','pmtm');
+    %       psd_obj = class_psdtools('input',data,'method','pmtm');
     %       output = process(psd_obj);
     %
     %   Arguments:
-    %       'input': EEGLAB strucuture EEG
+    %       'input': data matrix (channel x samples)
     %
     %   Options:
     %       'method': 'pmtm' or 'pwelch' [default: 'pmtm']
@@ -62,13 +62,17 @@ classdef class_psdtools
         alpha;
         beta;
         lgamma;
+        
+        % used for calculation
+        nbchan;
     end
     
     methods (Access = public)
         % defining a constructor
         function obj = class_psdtools(varargin)
             % input data
-            obj.input = get_varargin(varargin,'input',eeg_emptyset());
+            obj.input = get_varargin(varargin,'input',randn(64,2000));
+            obj.nbchan = size(obj.input,1);
             
             % ===== Other parameters (methods) =====
             obj.method = get_varargin(varargin,'method','pmtm');
@@ -97,12 +101,12 @@ classdef class_psdtools
             % calculate psds using pmtm or pwelch
             if strcmpi(obj.method,'pmtm')
                 % initialize
-                pxx{obj.input.nbchan,1} = [];
-                f{obj.input.nbchan,1} = [];
+                pxx{obj.nbchan,1} = [];
+                f{obj.nbchan,1} = [];
                 % for each channel
-                parfor ch = 1:obj.input.nbchan
+                parfor ch = 1:obj.nbchan
                     [pxx{ch,1},f{ch,1}] = ...
-                        pmtm(obj.input.data(ch,:),obj.nw,obj.freq,obj.input.srate);
+                        pmtm(obj.input(ch,:),obj.nw,obj.freq,obj.input.srate);
                 end
             elseif strcmpi(obj.method,'pwelch')
                 warning('Still building, coming soon');
@@ -114,12 +118,12 @@ classdef class_psdtools
             
             % calculate bandpowers
             % initialize the outputs
-            deltaP = zeros(obj.input.nbchan,1);
-            thetaP = zeros(obj.input.nbchan,1);
-            alphaP = zeros(obj.input.nbchan,1);
-            betaP = zeros(obj.input.nbchan,1);
-            lgammaP = zeros(obj.input.nbchan,1);
-            for ch = 1:obj.input.nbchan
+            deltaP = zeros(obj.nbchan,1);
+            thetaP = zeros(obj.nbchan,1);
+            alphaP = zeros(obj.nbchan,1);
+            betaP = zeros(obj.nbchan,1);
+            lgammaP = zeros(obj.nbchan,1);
+            for ch = 1:obj.nbchan
                 deltaP(ch,1) = bandpower(pxx{ch,1},f{ch,1},obj.delta,'psd');
                 thetaP(ch,1) = bandpower(pxx{ch,1},f{ch,1},obj.theta,'psd');
                 alphaP(ch,1) = bandpower(pxx{ch,1},f{ch,1},obj.alpha,'psd');
@@ -128,12 +132,12 @@ classdef class_psdtools
             end
             
             % calculate bandpowers in dB (10*log10)
-            delta_db = zeros(obj.input.nbchan,1);
-            theta_db = zeros(obj.input.nbchan,1);
-            alpha_db = zeros(obj.input.nbchan,1);
-            beta_db = zeros(obj.input.nbchan,1);
-            lgamma_db = zeros(obj.input.nbchan,1);
-            for ch = 1:obj.input.nbchan
+            delta_db = zeros(obj.nbchan,1);
+            theta_db = zeros(obj.nbchan,1);
+            alpha_db = zeros(obj.nbchan,1);
+            beta_db = zeros(obj.nbchan,1);
+            lgamma_db = zeros(obj.nbchan,1);
+            for ch = 1:obj.nbchan
                 delta_db(ch,1) = 10*log10(deltaP(ch,1));
                 theta_db(ch,1) = 10*log10(thetaP(ch,1));
                 alpha_db(ch,1) = 10*log10(alphaP(ch,1));
