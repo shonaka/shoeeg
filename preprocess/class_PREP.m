@@ -5,7 +5,7 @@ classdef class_PREP < handle
     %       process(prep_obj);
     %       EEG = prep_obj.postEEG;
     %       % visualize difference before and after
-    %       visualize(prep_obj);
+    %       show(prep_obj);
     %
     %   Arguments:
     %       'input': EEG structure from EEGLAB (required)
@@ -229,7 +229,7 @@ classdef class_PREP < handle
             end
         end
         
-        function visualize(obj)
+        function show(obj)
             % for visualizing pre and post EEG
             vis_artifacts(obj.postEEG, obj.preEEG);
         end

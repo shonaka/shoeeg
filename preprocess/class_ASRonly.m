@@ -6,7 +6,7 @@ classdef class_ASRonly < handle
     %       % extract processed EEG from object
     %       EEG = asr_obj.postEEG;
     %       % visualize difference before and after
-    %       visualize(asr_obj);
+    %       show(asr_obj);
     %
     %   Arguments:
     %       'input': EEG structure from EEGLAB (required)
@@ -125,7 +125,7 @@ classdef class_ASRonly < handle
             fprintf('Finished running ASR.\n');
         end
         
-        function visualize(obj)
+        function show(obj)
             % for visualizing the difference between pre and post
             vis_artifacts(obj.postEEG,obj.preEEG);
         end

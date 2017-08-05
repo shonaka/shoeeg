@@ -6,7 +6,7 @@ classdef class_inspectICs < handle
     %       % extract the output EEG from object
     %       EEG = inspect_obj.postEEG;
     %       % for visualizing components
-    %       visualize(inspect_obj);
+    %       show(inspect_obj);
     %
     %   Arguments:
     %       'input': EEG structure from EEGLAB (required)
@@ -168,7 +168,7 @@ classdef class_inspectICs < handle
             obj.postEEG.etc.SASICA_config = cfg;
         end
         
-        function visualize(obj)
+        function show(obj)
             % for visualizing identified components
             pop_selectcomps(obj.postEEG);
         end
