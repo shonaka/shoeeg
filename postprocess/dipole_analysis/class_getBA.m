@@ -22,6 +22,12 @@ classdef class_getBA < handle
     %       'search_spacing': how much mm in cube range you want to search
     %                         the area? [default: 5] (mm)
     %
+    %
+    %   For getSortedBA function:
+    %       - numclusts: number of clusters ( k for k-means)
+    %       - tal_sorted: cell array of k x 1 (k = number of clusters)
+    %                     already sorted to your intended order
+    %
     %   Pre-requisites:
     %       EEGLAB: https://sccn.ucsd.edu/eeglab/
     %       dependecies folder from shoeeg
@@ -109,7 +115,7 @@ classdef class_getBA < handle
                     tal_xyz(locationId,2), tal_xyz(locationId,3), obj.search_spacing);
                 
                 for i = 1:length(labelsForLocation)
-                    splitText = hlp_split(char(labelsForLocation(i)), ',');
+                    splitText = strsplit(char(labelsForLocation(i)), ',');
                     potentialBAname = splitText{end};
                     
                     % if identified Brodmann area in the last segment, note
