@@ -201,7 +201,8 @@ classdef class_dipplot < handle
             end
         end
         
-        % if you want to plot slices only
+        
+        % for plotting the clusters
         function visualize(obj, which_cluster, viewangle)
             if viewangle == 1
                 % plotting from top view
