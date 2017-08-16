@@ -42,6 +42,7 @@ classdef class_colors
         blind_friendly;
         artistic;
         gradient;
+        N;
     end
     
     methods (Access = public)
@@ -91,7 +92,7 @@ classdef class_colors
                 obj.artistic.bbs{4} = [.816, .882, .976];
                 
             % gradient colormap for topoplots and spectrograms
-            N = 256;
+            obj.N = get_varargin(varargin,'N',256);
             b2rColMap = [144 100  44;
                 187 120  54;
                 225 146  65;
@@ -106,7 +107,7 @@ classdef class_colors
                 70  99 174;
                 24  79 162]./255;
             index1 = linspace(0,1,size(b2rColMap,1));
-            index2 = linspace(0,1,N);
+            index2 = linspace(0,1,obj.N);
             interp_colmap = interp1(index1,b2rColMap,index2);
             obj.gradient.colormap = flipud(interp_colmap);
         end

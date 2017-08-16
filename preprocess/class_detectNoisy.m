@@ -68,7 +68,7 @@ classdef class_detectNoisy
             % ===========================================
             
             % pre-allocate the results matrix
-            obj.results = zeros(size(data));
+            obj.results = zeros(size(obj.data));
         end
     end
     
