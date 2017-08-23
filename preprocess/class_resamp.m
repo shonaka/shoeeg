@@ -64,7 +64,7 @@ classdef class_resamp < handle
             obj.postEEG = obj.preEEG;
             
             % other parameters
-            obj.resampleFreq = get_varargin(varargin,'resampFreq',100);
+            obj.resampleFreq = get_varargin(varargin,'resampleFreq',100);
         end
     end
     

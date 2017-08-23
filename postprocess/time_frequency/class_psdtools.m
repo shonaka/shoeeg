@@ -54,6 +54,7 @@ classdef class_psdtools
         
         % for pmtm
         nw;
+        Fs;
         freq;
         
         % for calculating powers
@@ -80,7 +81,8 @@ classdef class_psdtools
             
             % ===== Parameters for pmtm =====
             obj.nw = get_varargin(varargin,'nw',4);
-            obj.freq = get_varargin(varargin,'freq',0:0.1:obj.input.srate/2);
+            obj.Fs = get_varargin(varargin,'Fs',100);
+            obj.freq = get_varargin(varargin,'freq',0:0.1:obj.Fs/2);
             % ===============================
             
             % ===== Parameters for calculating powers =====
