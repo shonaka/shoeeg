@@ -11,7 +11,7 @@ classdef class_fig_defaults
     %       process(fig_defaults_obj);
     %
     %       % If you want to reset to the normal settings
-    %
+    %       restore(fig_defaults_obj);
     %   
     %   Reference:
     %       https://www.mathworks.com/help/matlab/creating_plots/default-property-values.html
