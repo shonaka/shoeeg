@@ -25,6 +25,7 @@ MATLAB 2015 or above required.
 * plot - some classes useful for plotting nice figures in MATLAB.
 * postprocess - some classes and functions used during post processing (e.g. source localization) in EEG study.
 * preprocess - some classes and functions used for pre processing in EEG study to clean artifacts (e.g. eye related, muscle related, motion related, etc).
+* stats - some functions and classes for statistical analysis.
 * utility - other stuffs.
 
 ## License
