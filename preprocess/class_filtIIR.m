@@ -92,6 +92,9 @@ classdef class_filtIIR < handle
                 % input is EEGLAB structure
                 nqFreq = obj.preEEG.srate/2;
                 nbChan = obj.preEEG.nbchan;
+                if nbChan == 0
+                    nbChan = size(obj.preEEG.data,1);
+                end
                 signal_data = obj.preEEG.data;
             elseif obj.isEEGLABstruct == 0
                 % input is just a data matrix (channel x samples)
@@ -100,12 +103,12 @@ classdef class_filtIIR < handle
                 signal_data = obj.preEEG;
             end
             
-            % preallocate output
-            filtered_data = zeros(size(signal_data));
-            
             % Run filtering
             [num, den, z, p] = butter(obj.order,obj.cutoff./nqFreq,obj.type);
             [num_tf, den_tf] = ss2tf(num, den, z, p);
+            
+            % preallocate filtered_data
+            filtered_data = zeros(size(signal_data));
             
             parfor ch = 1:nbChan
                 filtered_data(ch,:) = filtfilt(num_tf, den_tf ,signal_data(ch,:));
