@@ -104,14 +104,14 @@ classdef class_filtIIR < handle
             end
             
             % Run filtering
-            [num, den, z, p] = butter(obj.order,obj.cutoff./nqFreq,obj.type);
+            [num, den, z, p] = butter(obj.order, obj.cutoff./nqFreq, obj.type);
             [num_tf, den_tf] = ss2tf(num, den, z, p);
             
             % preallocate filtered_data
             filtered_data = zeros(size(signal_data));
             
             parfor ch = 1:nbChan
-                filtered_data(ch,:) = filtfilt(num_tf, den_tf ,signal_data(ch,:));
+                filtered_data(ch,:) = filtfilt(num_tf, den_tf, signal_data(ch,:));
             end
             
             % for checking purposes
