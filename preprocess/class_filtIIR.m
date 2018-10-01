@@ -22,7 +22,7 @@ classdef class_filtIIR < handle
     %               [default: 100 (Hz)]
     %
     %   Pre-requisites:
-    %       Singal processing toolbox
+    %       Signal processing toolbox
     %       Parallel processing toolbox
     
     % Copyright (C) 2017 Sho Nakagome (snakagome@uh.edu)
